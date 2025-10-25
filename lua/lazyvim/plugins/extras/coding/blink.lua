@@ -37,9 +37,7 @@ return {
     ---@type blink.cmp.Config
     opts = {
       snippets = {
-        expand = function(snippet, _)
-          return LazyVim.cmp.expand(snippet)
-        end,
+        preset = "default",
       },
 
       appearance = {
@@ -85,7 +83,11 @@ return {
 
       cmdline = {
         enabled = true,
-        keymap = { preset = "cmdline" },
+        keymap = {
+          preset = "cmdline",
+          ["<Right>"] = false,
+          ["<Left>"] = false,
+        },
         completion = {
           list = { selection = { preselect = false } },
           menu = {
@@ -104,6 +106,9 @@ return {
     },
     ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
     config = function(_, opts)
+      if opts.snippets and opts.snippets.preset == "default" then
+        opts.snippets.expand = LazyVim.cmp.expand
+      end
       -- setup compat sources
       local enabled = opts.sources.default
       for _, source in ipairs(opts.sources.compat or {}) do

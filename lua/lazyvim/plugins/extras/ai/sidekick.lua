@@ -4,11 +4,13 @@ return {
   -- copilot-language-server
   {
     "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        copilot = {},
-      },
-    },
+    opts = function(_, opts)
+      local sk = LazyVim.opts("sidekick.nvim") ---@type sidekick.Config|{}
+      if vim.tbl_get(sk, "nes", "enabled") ~= false then
+        opts.servers = opts.servers or {}
+        opts.servers.copilot = opts.servers.copilot or {}
+      end
+    end,
   },
 
   -- lualine
@@ -37,6 +39,19 @@ return {
           return { fg = Snacks.util.color(hl) }
         end,
       })
+
+      table.insert(opts.sections.lualine_x, 2, {
+        function()
+          local status = require("sidekick.status").cli()
+          return " " .. (#status > 1 and #status or "")
+        end,
+        cond = function()
+          return #require("sidekick.status").cli() > 0
+        end,
+        color = function()
+          return { fg = Snacks.util.color("Special") }
+        end,
+      })
     end,
   },
 
@@ -50,12 +65,27 @@ return {
           return true
         end
       end
+      Snacks.toggle({
+        name = "Sidekick NES",
+        get = function()
+          return require("sidekick.nes").enabled
+        end,
+        set = function(state)
+          require("sidekick.nes").enable(state)
+        end,
+      }):map("<leader>uN")
     end,
     -- stylua: ignore
     keys = {
       -- nes is also useful in normal mode
       { "<tab>", LazyVim.cmp.map({ "ai_nes" }, "<tab>"), mode = { "n" }, expr = true },
       { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
+      {
+        "<c-.>",
+        function() require("sidekick.cli").toggle() end,
+        desc = "Sidekick Toggle",
+        mode = { "n", "t", "i", "x" },
+      },
       {
         "<leader>aa",
         function() require("sidekick.cli").toggle() end,
@@ -69,10 +99,20 @@ return {
         desc = "Select CLI",
       },
       {
+        "<leader>ad",
+        function() require("sidekick.cli").close() end,
+        desc = "Detach a CLI Session",
+      },
+      {
         "<leader>at",
         function() require("sidekick.cli").send({ msg = "{this}" }) end,
         mode = { "x", "n" },
         desc = "Send This",
+      },
+      {
+        "<leader>af",
+        function() require("sidekick.cli").send({ msg = "{file}" }) end,
+        desc = "Send File",
       },
       {
         "<leader>av",
@@ -86,17 +126,29 @@ return {
         mode = { "n", "x" },
         desc = "Sidekick Select Prompt",
       },
-      {
-        "<c-.>",
-        function() require("sidekick.cli").focus() end,
-        mode = { "n", "x", "i", "t" },
-        desc = "Sidekick Switch Focus",
-      },
-      -- Example of a keybinding to open Claude directly
-      {
-        "<leader>ac",
-        function() require("sidekick.cli").toggle({ name = "claude", focus = true }) end,
-        desc = "Sidekick Claude Toggle",
+    },
+  },
+
+  {
+    "folke/snacks.nvim",
+    optional = true,
+    opts = {
+      picker = {
+        actions = {
+          sidekick_send = function(...)
+            return require("sidekick.cli.picker.snacks").send(...)
+          end,
+        },
+        win = {
+          input = {
+            keys = {
+              ["<a-a>"] = {
+                "sidekick_send",
+                mode = { "n", "i" },
+              },
+            },
+          },
+        },
       },
     },
   },
