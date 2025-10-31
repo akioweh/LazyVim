@@ -2,14 +2,10 @@ return {
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
-    event = vim.fn.has("nvim-0.11") == 1 and { "BufReadPre", "BufNewFile", "BufWritePre" } or "LazyFile",
+    event = "LazyFile",
     dependencies = {
       "mason.nvim",
-      {
-        "mason-org/mason-lspconfig.nvim",
-        version = vim.fn.has("nvim-0.11") == 0 and "1.32.0" or false,
-        config = function() end,
-      },
+      { "mason-org/mason-lspconfig.nvim", config = function() end },
     },
     opts_extend = { "servers.*.keys" },
     opts = function()
@@ -271,7 +267,6 @@ return {
 
     "mason-org/mason.nvim",
     cmd = "Mason",
-    version = vim.fn.has("nvim-0.11") == 0 and "1.11.0" or false,
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
     opts_extend = { "ensure_installed" },
