@@ -32,9 +32,8 @@ return {
     },
 
     keys = function(_, keys)
-      local dap = require("dap")
-
       local function edit_breakpoint()
+        local dap = require("dap")
         -- Search for an existing breakpoint on this line in this buffer
         ---@return dap.SourceBreakpoint bp that was either found, or an empty placeholder
         local function find_bp()
@@ -96,21 +95,21 @@ return {
       -- stylua: ignore
       local default_keys = {
         { "<leader>dB", edit_breakpoint, desc = "Breakpoint Condition" },
-        { "<leader>db", function() dap.toggle_breakpoint() end, desc = "Toggle Breakpoint" },
-        { "<leader>dc", function() dap.continue() end, desc = "Run/Continue" },
-        { "<leader>da", function() dap.continue({ before = get_args }) end, desc = "Run with Args" },
-        { "<leader>dC", function() dap.run_to_cursor() end, desc = "Run to Cursor" },
-        { "<leader>dg", function() dap.goto_() end, desc = "Go to Line (No Execute)" },
-        { "<leader>di", function() dap.step_into() end, desc = "Step Into" },
-        { "<leader>dj", function() dap.down() end, desc = "Down" },
-        { "<leader>dk", function() dap.up() end, desc = "Up" },
-        { "<leader>dl", function() dap.run_last() end, desc = "Run Last" },
-        { "<leader>do", function() dap.step_out() end, desc = "Step Out" },
-        { "<leader>dO", function() dap.step_over() end, desc = "Step Over" },
-        { "<leader>dP", function() dap.pause() end, desc = "Pause" },
-        { "<leader>dr", function() dap.repl.toggle() end, desc = "Toggle REPL" },
-        { "<leader>ds", function() dap.session() end, desc = "Session" },
-        { "<leader>dt", function() dap.terminate() end, desc = "Terminate" },
+        { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
+        { "<leader>dc", function() require("dap").continue() end, desc = "Run/Continue" },
+        { "<leader>da", function() require("dap").continue({ before = get_args }) end, desc = "Run with Args" },
+        { "<leader>dC", function() require("dap").run_to_cursor() end, desc = "Run to Cursor" },
+        { "<leader>dg", function() require("dap").goto_() end, desc = "Go to Line (No Execute)" },
+        { "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },
+        { "<leader>dj", function() require("dap").down() end, desc = "Down" },
+        { "<leader>dk", function() require("dap").up() end, desc = "Up" },
+        { "<leader>dl", function() require("dap").run_last() end, desc = "Run Last" },
+        { "<leader>do", function() require("dap").step_out() end, desc = "Step Out" },
+        { "<leader>dO", function() require("dap").step_over() end, desc = "Step Over" },
+        { "<leader>dP", function() require("dap").pause() end, desc = "Pause" },
+        { "<leader>dr", function() require("dap").repl.toggle() end, desc = "Toggle REPL" },
+        { "<leader>ds", function() require("dap").session() end, desc = "Session" },
+        { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
         { "<leader>dw", function() require("dap.ui.widgets").hover() end, desc = "Widgets" },
       }
       return vim.tbl_deep_extend("force", default_keys, keys)
