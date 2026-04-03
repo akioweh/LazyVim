@@ -5,6 +5,9 @@ local Icons = require("mini.icons")
 
 local Plugin = require("lazy.core.plugin")
 _G.LazyVim = require("lazyvim.util")
+require("lazyvim.config")
+LazyVim.config.get_defaults()
+LazyVim.plugin.setup()
 
 describe("Extra", function()
   local Config = require("lazy.core.config")
@@ -93,8 +96,13 @@ describe("Extra", function()
           local mason = spec.plugins["mason.nvim"]
           local mason_opts = Plugin.values(mason, "opts", false)
 
-          for lsp in pairs(lspconfig_opts.servers or {}) do
+          for lsp, lsp_opts in pairs(lspconfig_opts.servers or {}) do
             local lsp_pkg = lsp_to_pkg[lsp]
+            -- Skip if the LSP server is disabled in the config since mason.nvim won't install it
+            -- and it might still be used for conform.nvim or nvim-lint, etc.
+            if type(lsp_opts) == "table" and lsp_opts.enabled == false then
+              lsp_pkg = false
+            end
             assert(
               not (lsp_pkg and vim.tbl_contains(mason_opts.ensure_installed, lsp_pkg)),
               "LSP server "

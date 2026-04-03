@@ -93,4 +93,21 @@ function M.execute(opts)
   end
 end
 
+---@param filter? vim.lsp.get_clients.Filter
+function M.code_actions(filter)
+  filter = filter or {}
+  local ret = {} ---@type string[]
+  local clients = vim.lsp.get_clients(filter)
+  for _, client in ipairs(clients) do
+    -- check server cababilities first
+    vim.list_extend(ret, vim.tbl_get(client, "server_capabilities", "codeActionProvider", "codeActionKinds") or {})
+    -- check dynamic capabilities
+    local regs = client.dynamic_capabilities:get("codeActionProvider", filter)
+    for _, reg in ipairs(regs or {}) do
+      vim.list_extend(ret, vim.tbl_get(reg, "registerOptions", "codeActionKinds") or {})
+    end
+  end
+  return LazyVim.dedup(ret)
+end
+
 return M
