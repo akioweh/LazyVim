@@ -49,6 +49,9 @@ end, { desc = "Delete Buffers other than the current layout" })
 map("n", "<leader>bO", function()
   Snacks.bufdelete.other()
 end, { desc = "Delete Other Buffers" })
+map("n", "<leader>bi", function()
+  Snacks.bufdelete.invisible()
+end, { desc = "Delete Invisible Buffers" })
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 
 -- Clear search and stop snippet on escape
